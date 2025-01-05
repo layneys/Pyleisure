@@ -5,13 +5,10 @@ from fastapi.staticfiles import StaticFiles
 from external.parser import parse_input
 from external.events import get_events_page, get_event_detail
 from external.weather import get_weather
-from db_loader.scheduler import run_loader
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-run_loader()
 
 @app.get("/", response_class=HTMLResponse)
 async def get_event_list(request: Request):
