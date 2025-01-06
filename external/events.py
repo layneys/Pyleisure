@@ -9,28 +9,35 @@ def get_start_of_today_unix():
     return int(time.mktime(current_day.timetuple()))
 
 
-async def get_events_page(city: str):
+async def get_events_page(city: str, retries = 10):
+    attempt = 0
+    while attempt < retries:
+        try:
+            async with httpx.AsyncClient() as client:
 
-    async with httpx.AsyncClient() as client:
+                actual_time = get_start_of_today_unix()
+                url = f'https://kudago.com/public-api/v1.4/events/?lang=&fields=id,dates,title,slug,place,description,body_text,categories,tagline,price,is_free,images,favorites_count,tags,site_url,participants&actual_since={actual_time}&location={city}'
 
-        actual_time = get_start_of_today_unix()
-        url = f'https://kudago.com/public-api/v1.4/events/?lang=&fields=id,dates,title,slug,place,description,body_text,categories,tagline,price,is_free,images,favorites_count,tags,site_url,participants&actual_since={actual_time}&location={city}'
+                response = await client.get(url)
+                data = response.json()
 
-        response = await client.get(url)
-        data = response.json()
+                for event in data["results"]:
+                    event["parsed_description"] = parse_input(event["description"])
+                    event["parsed_body_text"] = parse_input(event["body_text"])
 
-        for event in data["results"]:
-            event["parsed_description"] = parse_input(event["description"])
-            event["parsed_body_text"] = parse_input(event["body_text"])
+                    if len(event["dates"]) > 1:
+                        event["dates"] = event["dates"][-1]
 
-            if len(event["dates"]) > 1:
-                event["dates"] = event["dates"][-1]
+                    if len(event["images"]) > 1:
+                        event["images"] = event["images"][0]
+            return data
 
-            if len(event["images"]) > 1:
-                event["images"] = event["images"][0]
-
-    return data
-
+        except httpx.ReadTimeout as e:
+            attempt += 1
+            if attempt < retries:
+                time.sleep(1)
+            else:
+                raise e
 
 if __name__ == "__main__":
     pass
