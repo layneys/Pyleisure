@@ -1,6 +1,6 @@
 import schedule
 import time
-from event_api.events_loader import fill_fake_event_db
+from events_loader import fill_fake_event_db
 
 fill_fake_event_db()
 
