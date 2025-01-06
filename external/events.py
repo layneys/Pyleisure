@@ -1,29 +1,36 @@
 import httpx
 import time
 from datetime import datetime, timedelta
+from external.parser import parse_input
 
-def get_start_of_last_month_unix():
+def get_start_of_today_unix():
     now = datetime.now()
-    current_date = datetime(now.year, now.month, now.day)
-    start_of_last_month = current_date - timedelta(weeks=1)
-    return int(time.mktime(start_of_last_month.timetuple()))
+    current_day = datetime(now.year, now.month, now.day)-timedelta(days=1)
+    return int(time.mktime(current_day.timetuple()))
 
 
 async def get_events_page(city: str):
 
-    actual_time = get_start_of_last_month_unix()
-
     async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://kudago.com/public-api/v1.4/events/?lang=ru&actual_since={actual_time}&location={city}")
-        response_json = response.json()
-    return response_json
 
+        actual_time = get_start_of_today_unix()
+        url = f'https://kudago.com/public-api/v1.4/events/?lang=&fields=id,dates,title,slug,place,description,body_text,categories,tagline,price,is_free,images,favorites_count,tags,site_url,participants&actual_since={actual_time}&location={city}'
 
-async def get_event_detail(id: int):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://kudago.com/public-api/v1.4/events/{id}/?lang=ru")
-        response_json = response.json()
-    return response_json
+        response = await client.get(url)
+        data = response.json()
+
+        for event in data["results"]:
+            event["parsed_description"] = parse_input(event["description"])
+            event["parsed_body_text"] = parse_input(event["body_text"])
+
+            if len(event["dates"]) > 1:
+                event["dates"] = event["dates"][-1]
+
+            if len(event["images"]) > 1:
+                event["images"] = event["images"][0]
+
+    return data
+
 
 if __name__ == "__main__":
     pass

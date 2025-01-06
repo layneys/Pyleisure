@@ -19,7 +19,6 @@ def get_weekly_data_by_city(city: str, page:int):
     data = response.json()
 
     for event in data["results"]:
-        print(event.keys())
         event["parsed_description"] = parse_input(event["description"])
         event["parsed_body_text"] = parse_input(event["body_text"])
 
@@ -43,9 +42,7 @@ def fill_fake_event_db():
             with open(f'{db_path}', 'a', encoding='utf-8') as f:
                 json.dump(data["results"], f, ensure_ascii=False, indent=4)
             i+=1
-            print(f"i={i} for {city}")
-            if (data["next"] is None) or i==2: #для экономии времени
-                print(f'Finish events! for {city}')
+            if (data["next"] is None): #для экономии времени
                 break
 
 if __name__ == "__main__":

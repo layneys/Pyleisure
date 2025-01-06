@@ -20,9 +20,23 @@ Requests to EVENTS
 
     {% for event in events.results %}
         <div class="event">
-             <h3><a href = "#" onclick="handleIdClick(this)">{{ event.id }}</a></h3>
-                <p>{{ event.title|truncate }}</p>
+            ============================================================
+            <h3>{{event.id}}</h3>
+            <p>{{event.slug | truncate (25, True)}}</p>
+            <p>{{event.title | truncate (25, True)}}</p>
+            <p>{{event.place}}</p>
+            <p>{{event.description | truncate (25, True)}}</p>
+            <p>{{parsed_description  | truncate (25, True)}}</p>
+            <p>{{event.parsed_description  | truncate (25, True)}}</p>
+            <p>{{event.body_text  | truncate (25, True)}}</p>
+            <p>{{event.parsed_body_text  | truncate (25, True)}}</p>
+            <img src="{{event.images.image}}">
+            <p>{{event.images}}</p>
+            <p>{{event.tags  | truncate (25, True)}}</p>
+            <p>{{event.tagline  | truncate (25, True)}}</p>
+            ============================================================
         </div>
+
         <hr>
     {% endfor %}
 {% endblock %}
