@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -6,22 +6,19 @@ from external.parser import parse_input
 from external.events import get_events_page, get_event_detail
 from external.weather import get_weather
 
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
 @app.get("/", response_class=HTMLResponse)
-async def get_event_list(request: Request):
+def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-    events = await get_events_page('spb')
-    weather = await get_weather('spb')
 
-    return templates.TemplateResponse("event_list.html", {"request": request,
-                                                      "events": events,
-                                                      "weather": weather})
-
-@app.get("/event")
-async def get_event(id, request: Request):
+@app.post("/event")
+async def get_event(request: Request, id: int = Form(...)):
 
     event = await get_event_detail(id)
     parsed_description = parse_input(event['description'])
@@ -31,3 +28,17 @@ async def get_event(id, request: Request):
                                                       "event": event,
                                                             "parsed_body_text": parsed_body_text,
                                                             "parsed_description": parsed_description})
+
+
+@app.post("/list", response_class=HTMLResponse)
+async def process_data(
+    request: Request,
+    choice: str = Form(...)
+):
+    events = await get_events_page(choice)
+    weather = await get_weather(choice)
+
+    return templates.TemplateResponse("event_list.html", {"request": request,
+                                                          "events": events,
+                                                          "weather": weather})
+

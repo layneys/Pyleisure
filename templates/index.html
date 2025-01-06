@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная</title>
+</head>
+<body>
+    <h1>Выберите город</h1>
+    <form onsubmit="submitForm(event)">
+        <label for="choice">Выберите вариант:</label>
+        <select id="choice" name="choice" required>
+            <option value="msk">Москва</option>
+            <option value="spb">Санкт Петербург</option>
+            <option value="ekb">Екатеринбург</option>
+        </select>
+        <button type="submit">Отправить</button>
+    </form>
+    <div id="result-container">
+        <!-- Сюда будет вставлен список -->
+    </div>
+</body>
+<script src="{{ url_for('static', path='js/script.js') }}"></script>
+</html>

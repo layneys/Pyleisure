@@ -2,7 +2,11 @@
 
 {% block title %}REQUESTS{% endblock %}
 
-{% block heading %}Requests to EVENTS{% endblock %}
+{% block heading %}
+
+Requests to EVENTS
+
+{% endblock %}
 
 {% block content %}
 
@@ -12,14 +16,15 @@
     <p>Condition: {{weather.current.condition}}</p>
     <p>Wind speed: {{weather.current.wind_kph}} km/h</p>
 
-
     <h2>Total Number of Events: {{ events.results|length }}</h2>
 
     {% for event in events.results %}
         <div class="event">
-             <h3><a href = "http://127.0.0.1:8000/event?id={{event.id}}">{{ event.id }}</a></h3>
+             <h3><a href = "#" onclick="handleIdClick(this)">{{ event.id }}</a></h3>
                 <p>{{ event.title|truncate }}</p>
         </div>
         <hr>
     {% endfor %}
 {% endblock %}
+
+
