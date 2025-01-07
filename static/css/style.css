@@ -1,0 +1,105 @@
+/* Основные цвета */
+:root {
+    --primary-color: #232323;
+    --secondary-color: #ababab;
+}
+
+* {
+    font-family: "Zen Kaku Gothic Antique", 'Arial';
+}
+
+body {
+    background-color: var(--secondary-color);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 34px;
+    padding: 20px 90px;
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.header__link {
+    color: #fff;
+    max-height: 30px;
+}
+.header__link:hover {
+    opacity: .6;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    padding: 30px 50px;
+}
+
+.main__body {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.main__title {
+    font-weight: 800;
+    font-size: 30px;
+    text-align: center;
+}
+
+.main__form {
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.main__select {
+    padding: 0 10px;
+    max-width: 150px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+}
+
+.main__button {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 5px;
+}
+.main__button:hover {
+    color: var(--secondary-color);
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.cards__title,
+.card__title {
+    font-size: 28px;
+}
+
+.card {
+    max-width: 800px;
+    border-radius: 15px;
+    padding: 18px 24px;
+    background-color: #fff;
+    margin-top: 25px;
+}
+
+.card__title{
+    font-weight: 600;
+}
+.card > p {
+    font-size: 20px;
+}

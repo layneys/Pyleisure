@@ -13,4 +13,3 @@ async function submitForm(event) {
             // Вставляем HTML-ответ в элемент с id="result-container"
             document.getElementById("result-container").innerHTML = html;
         }
-
