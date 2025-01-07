@@ -29,8 +29,7 @@ def fill_fake_weather_db():
         response_list.append(get_weather(city))
     with open(f'{db_path}', 'a', encoding='utf-8') as f:
         json.dump(response_list, f, ensure_ascii=False, indent=4)
-    print(response_list)
-    print('got weather!')
+
 
 if __name__ == "__main__":
     pass
