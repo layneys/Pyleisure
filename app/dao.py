@@ -3,6 +3,9 @@ from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete
 from app.database import get_session
 from app.models import Users, Events, Companions, Choices, Weather
+from datetime import datetime
+
+print(datetime.now().date())
 
 class BaseDAO:
     model = None
@@ -51,8 +54,27 @@ class UsersDAO(BaseDAO):
 class WeatherDAO(BaseDAO):
     model = Weather
 
+
 class EventsDAO(BaseDAO):
     model = Events
+
+    @classmethod
+    async def delete_irrelevant_events(cls, session: get_session()):
+        try:
+            # Получение текущей даты
+            current_date = datetime.now().date()
+
+            # Удаление событий с датой окончания меньше текущей даты
+            stmt = sqlalchemy_delete(Events).where(Events.event_end_date[:11] < str(current_date))
+            result = await session.execute(stmt)
+
+            # Подтверждение изменений
+            await session.commit()
+
+            print(f"Удалено мероприятий: {result.rowcount}")
+        except Exception as e:
+            await session.rollback()  # Откат изменений в случае ошибки
+            print(f"Ошибка при удалении старых мероприятий: {e}")
 
 class CompanionsDAO(BaseDAO):
     model = Companions

@@ -28,6 +28,9 @@ class Events(Base):
     __tablename__ = 'events'
 
     event_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    event_title: Mapped[str] = mapped_column(String, nullable=False)
+    event_city: Mapped[str] = mapped_column(String, nullable=False)
+    event_place: Mapped[str] = mapped_column(String, nullable=False)
     event_start_date: Mapped[str] = mapped_column(String, nullable=False)
     event_end_date: Mapped[str] = mapped_column(String, nullable=False)
     event_type: Mapped[str] = mapped_column(String, nullable=False)
@@ -65,7 +68,7 @@ class Choices(Base):
     choice_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     telegram_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.telegram_id'))
     event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.event_id'))
-    group_id: Mapped[int] = mapped_column(Integer, ForeignKey('companions.group_id'))
+    group_id: Mapped[int] = mapped_column(Integer, ForeignKey('companions.group_id'), nullable=True)
 
     user: Mapped["Users"] = relationship(back_populates="choices")
     events: Mapped["Events"] = relationship(back_populates="choices")
