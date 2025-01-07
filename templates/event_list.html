@@ -16,6 +16,14 @@
 
 {% block content %}
 
+        <h1>А вот тут резы для запроса к модели:</h1>
+
+    {% for found in model_response %}
+        <p> {{found.event_name}}</p>
+        <p>{{found.content}}</p>
+        <p>{{found.img_id}}</p>
+    {% endfor %}
+
     {% for event in events.results %}
         <div class="card">
             <img src="{{event.images.image}}">
