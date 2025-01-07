@@ -4,49 +4,38 @@
 
 {% block heading %}
 
-Requests to EVENTS
+<h2 class="cards__title">Погода</h2>
+
+<p>Температура: {{weather.current.temp_c}}°C </p>
+<p>Погодные условия: {{weather.current.condition.text}}</p>
+<p>Скорость ветра: {{weather.current.wind_kph}} км/ч</p>
+
+<!-- <h2>Общее количество мероприятий: {{ events.results|length }}</h2> -->
 
 {% endblock %}
 
 {% block content %}
 
-    <h2>Current weather in {{weather.location.name}}: </h2>
-
-    <p>Temp: {{weather.current.temp_c}} </p>
-    <p>Condition: {{weather.current.condition}}</p>
-    <p>Wind speed: {{weather.current.wind_kph}} km/h</p>
-
-    <h2>Total Number of Events: {{ events.results|length }}</h2>
-
     {% for event in events.results %}
-        <div class="event">
-            ============================================================
-            <h3>{{event.id}}</h3>
-            <p>{{event.slug | truncate (25, True)}}</p>
-            <p>{{event.title | truncate (25, True)}}</p>
-<!--            <p>{{event.place}}</p>-->
+        <div class="card">
+            <img src="{{event.images.image}}">
+            <h3 class="card__title">{{ event.title.capitalize() }}</h3>
+            <p class="card__subtitle">{{event.parsed_body_text | truncate (1000, True)}}</p>
+<!--            <p>Start date: {{event.dates.start}}</p>-->
+<!--            <p>End date: {{event.dates.end}}</p>-->
             {%if event.place.title %}
-            <p>{{event.place.title}}</p>
+                <p>Название места проведения: {{event.place.title}}</p>
             {% endif %}
             {% if event.place.address %}
-            <p>{{event.place.address}}</p>
+                <p>Адрес: {{event.place.address}}</p>
             {% endif %}
-            <p>{{event.description | truncate (25, True)}}</p>
-            <p>{{parsed_description  | truncate (25, True)}}</p>
-            <p>{{event.parsed_description  | truncate (25, True)}}</p>
-            <p>{{event.body_text  | truncate (25, True)}}</p>
-            <p>{{event.parsed_body_text  | truncate (25, True)}}</p>
-            <img src="{{event.images.image}}">
-            <p>{{event.images}}</p>
-            <p>{{event.tags  | truncate (25, True)}}</p>
-            <p>{{event.tagline  | truncate (25, True)}}</p>
-            ============================================================
+            {%if event.is_free%}
+                <p>Бесплатно</p>
+                {% else %}
+                <p>{{event.price}}</p>
+            {% endif %}
         </div>
 
         <hr>
     {% endfor %}
-
-
 {% endblock %}
-
-
