@@ -3,9 +3,9 @@ from dotenv import load_dotenv
 import httpx
 load_dotenv()
 
-api_key = os.getenv('API_KEY')
+api_key = os.getenv('WEATHER_API_KEY')
 
-cities_names = {
+CITIES_NAMES = {
     "msk": "Moscow",
     "spb": "Saint Petersburg",
     "ekb": "Ekaterinburg",
@@ -13,7 +13,7 @@ cities_names = {
 
 async def get_weather(city: str):
     async with httpx.AsyncClient() as client:
-        response = await client.get(f"http://api.weatherapi.com/v1/current.json?key={api_key}&q={cities_names[city]}&aqi=no")
+        response = await client.get(f"http://api.weatherapi.com/v1/current.json?key={api_key}&q={CITIES_NAMES[city]}&aqi=no")
         response_json = response.json()
     return response_json
 

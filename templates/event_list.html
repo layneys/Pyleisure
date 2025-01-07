@@ -24,7 +24,13 @@ Requests to EVENTS
             <h3>{{event.id}}</h3>
             <p>{{event.slug | truncate (25, True)}}</p>
             <p>{{event.title | truncate (25, True)}}</p>
-            <p>{{event.place}}</p>
+<!--            <p>{{event.place}}</p>-->
+            {%if event.place.title %}
+            <p>{{event.place.title}}</p>
+            {% endif %}
+            {% if event.place.address %}
+            <p>{{event.place.address}}</p>
+            {% endif %}
             <p>{{event.description | truncate (25, True)}}</p>
             <p>{{parsed_description  | truncate (25, True)}}</p>
             <p>{{event.parsed_description  | truncate (25, True)}}</p>
@@ -39,6 +45,8 @@ Requests to EVENTS
 
         <hr>
     {% endfor %}
+
+
 {% endblock %}
 
 

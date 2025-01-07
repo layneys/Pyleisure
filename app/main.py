@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 from external.events import get_events_page
 from external.weather import get_weather
 
-
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -19,8 +18,7 @@ def read_root(request: Request):
 @app.post("/list", response_class=HTMLResponse)
 async def process_data(
     request: Request,
-    choice: str = Form(...)
-):
+    choice: str = Form(...)):
     events = await get_events_page(choice)
     weather = await get_weather(choice)
 
