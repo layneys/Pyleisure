@@ -15,44 +15,29 @@ class Users(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)  # Уникальный идентификатор пользователя в Telegram
     real_name: Mapped[str] = mapped_column(String, nullable=True)  # Имя пользователя
     username: Mapped[str] = mapped_column(String, nullable=False)  # Telegram username
+    city: Mapped[str] = mapped_column(String, nullable=False)  # Город пользователя
     age: Mapped[int] = mapped_column(Integer, nullable=False)   # возраст пользователя
     gender: Mapped[GenderEnum] = mapped_column(Enum(GenderEnum), nullable=False)   # пол пользователя
     preferences: Mapped[JSONB] = mapped_column(JSONB, nullable=True)   # предпочтения пользователя
 
     # Связь с таблицами
-    templates: Mapped[list["Templates"]] = relationship(back_populates="user")
     groups: Mapped[list["Companions"]] = relationship(back_populates="user")
     choices: Mapped[list["Choices"]] = relationship(back_populates="user")
-
-class Templates(Base):
-    __tablename__ = 'templates'
-
-    class TimeOfDay(enum.Enum):
-        morning = 'Утро'
-        day = 'День'
-        evening = 'Вечер'
-        night = 'Ночь'
-
-    template_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.telegram_id'))
-    range: Mapped[int] = mapped_column(Integer, nullable=False)
-    date: Mapped[Date] = mapped_column(Date, nullable=False)
-    time: Mapped[TimeOfDay] = mapped_column(Enum(TimeOfDay), nullable=True)
-    type: Mapped[str] = mapped_column(String, nullable=True)
-
-    user: Mapped["Users"] = relationship(back_populates="templates")
-
 
 class Events(Base):
     __tablename__ = 'events'
 
-    event_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    event_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    event_time: Mapped[Time] = mapped_column(Time, nullable=False)
+    event_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    event_start_date: Mapped[str] = mapped_column(String, nullable=False)
+    event_end_date: Mapped[str] = mapped_column(String, nullable=False)
     event_type: Mapped[str] = mapped_column(String, nullable=False)
-    event_price: Mapped[float] = mapped_column(Float, nullable=False)
+    event_description: Mapped[str] = mapped_column(String, nullable=False)
+    event_price: Mapped[str] = mapped_column(String, nullable=False)
+    event_img: Mapped[str] = mapped_column(String, nullable=False)
+    event_url: Mapped[str] = mapped_column(String, nullable=False)
+    event_favorites_count: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    choices: Mapped[list["Choices"]] = relationship(back_populates="event")  # надо сделать 1 к 1
+    choices: Mapped[list["Choices"]] = relationship(back_populates="events")  # надо сделать 1 к 1
 
 
 class Weather(Base):

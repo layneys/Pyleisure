@@ -2,7 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete
 from app.database import get_session
-from app.models import Users, Templates, Events, Companions, Choices, Weather
+from app.models import Users, Events, Companions, Choices, Weather
 
 class BaseDAO:
     model = None
@@ -47,8 +47,6 @@ class UsersDAO(BaseDAO):
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
-class TemplatesDAO(BaseDAO):
-    model = Templates
 
 class WeatherDAO(BaseDAO):
     model = Weather

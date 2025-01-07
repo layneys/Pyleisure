@@ -1,11 +1,17 @@
 import os
+
+from alembic.command import current
 from dotenv import load_dotenv
 import requests
 import json
+from datetime import datetime
+from app.models import Weather
+from app.database import get_session
+from app.dao import WeatherDAO
 
 load_dotenv()
 
-api_key = os.getenv('API_KEY')
+api_key = 'your_key'
 
 cities_names = {
     "msk": "Moscow",
@@ -21,18 +27,23 @@ def get_weather(city: str):
     return response_json
 
 
-def fill_fake_weather_db():
+async def fill_weather_db(session):
+    for city in ["msk", "spb", "ekb"]:
+        data = get_weather(city)
+        await WeatherDAO.add(session,
+            city=data['location']['name'],
+            date=datetime.strptime(data['location']['localtime'][:10], "%Y-%m-%d").date(),
+            temperature=data['current']['temp_c'],
+            description=data['current']['condition']['text'],)
 
-    db_path = os.path.abspath("./fake_weather_db.json")
-    response_list = []
-    for city in cities_names.keys():
-        response_list.append(get_weather(city))
-    with open(f'{db_path}', 'a', encoding='utf-8') as f:
-        json.dump(response_list, f, ensure_ascii=False, indent=4)
-    print(response_list)
-    print('got weather!')
 
 if __name__ == "__main__":
-    pass
+    import asyncio
 
 
+    async def run():
+        async for session in get_session():
+            await fill_weather_db(session)
+
+
+    asyncio.run(run())
