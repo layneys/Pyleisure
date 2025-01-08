@@ -45,7 +45,7 @@ async function openLiked(event) {
 
         // Генерируем HTML для карточек "Любимое"
         let html = '';
-        for (const found of data.results) {
+        for (const found of data) {
             html += `
                 <div class="card">
                     <img src="${found.images.image}" alt="Картинка мероприятия" onclick="clickLike(event, '${found.id}')">
