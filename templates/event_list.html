@@ -6,9 +6,7 @@
 
 <h2 class="cards__title">Погода</h2>
 
-<p>Температура: {{weather.current.temp_c}}°C </p>
-<p>Погодные условия: {{weather.current.condition.text}}</p>
-<p>Скорость ветра: {{weather.current.wind_kph}} км/ч</p>
+<p>Температура: {{weather.current.temp_c}}°C </p>Ы
 
 <!-- <h2>Общее количество мероприятий: {{ events.results|length }}</h2> -->
 
@@ -41,6 +39,9 @@
                 <p>Бесплатно</p>
                 {% else %}
                 <p>{{event.price}}</p>
+            {% endif %}
+            {% if event.site_url %}
+                <p>Ссылка: {{ event.site_url }}</p>
             {% endif %}
         </div>
 

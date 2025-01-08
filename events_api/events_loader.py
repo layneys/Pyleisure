@@ -59,4 +59,4 @@ def fill_fake_event_db():
                 break
 
 if __name__ == "__main__":
-    pass
+    fill_fake_event_db()
