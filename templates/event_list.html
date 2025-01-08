@@ -21,11 +21,21 @@
             <img src="{{event.images.image}}">
             <h3 class="card__title">{{ event.title.capitalize() }}</h3>
             <p class="card__subtitle">{{event.parsed_body_text | truncate (1000, True)}}</p>
-            <p>{{event.dates}}</p>
+<!--            <p>Start date: {{event.dates.start}}</p>-->
+<!--            <p>End date: {{event.dates.end}}</p>-->
+            {%if event.place.title %}
+                <p>Название места проведения: {{event.place.title}}</p>
+            {% endif %}
+            {% if event.place.address %}
+                <p>Адрес: {{event.place.address}}</p>
+            {% endif %}
+            {%if event.is_free%}
+                <p>Бесплатно</p>
+                {% else %}
+                <p>{{event.price}}</p>
+            {% endif %}
         </div>
 
         <hr>
     {% endfor %}
 {% endblock %}
-
-
