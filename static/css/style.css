@@ -90,7 +90,7 @@ body {
 }
 
 .card {
-    max-width: 800px;
+    max-width: 600px;
     border-radius: 15px;
     padding: 18px 24px;
     background-color: #fff;
@@ -102,4 +102,29 @@ body {
 }
 .card > p {
     font-size: 20px;
+}
+
+.card__image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.card__like {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10;
+    transition: opacity 0.3s ease, fill 0.3s ease;
+}
+
+.card__like:hover svg {
+    opacity: .6;
+}
+
+.card__like.clicked svg {
+    fill: red;
 }

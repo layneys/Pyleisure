@@ -6,7 +6,7 @@ from lxml.builder import unicode
 from sqlalchemy import union
 
 from app.dao import EventsDAO
-from external.parser import parse_input
+from external.events import parse_input
 
 cities_names = {
     "msk": "Moscow",

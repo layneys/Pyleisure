@@ -9,16 +9,16 @@ class Users(Base):
     __tablename__ = 'users'
 
     class GenderEnum(enum.Enum):
-        male = 'М'
-        female = 'Ж'
+        male = 'Мужской'
+        female = 'Женский'
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)  # Уникальный идентификатор пользователя в Telegram
     real_name: Mapped[str] = mapped_column(String, nullable=True)  # Имя пользователя
     username: Mapped[str] = mapped_column(String, nullable=False)  # Telegram username
-    city: Mapped[str] = mapped_column(String, nullable=False)  # Город пользователя
-    age: Mapped[int] = mapped_column(Integer, nullable=False)   # возраст пользователя
-    gender: Mapped[GenderEnum] = mapped_column(Enum(GenderEnum), nullable=False)   # пол пользователя
-    preferences: Mapped[JSONB] = mapped_column(JSONB, nullable=True)   # предпочтения пользователя
+    city: Mapped[str] = mapped_column(String, nullable=True)  # Город пользователя
+    age: Mapped[int] = mapped_column(Integer, nullable=True)   # возраст пользователя
+    gender: Mapped[GenderEnum] = mapped_column(Enum(GenderEnum), nullable=True)   # пол пользователя
+    preferences: Mapped[str] = mapped_column(String, nullable=True)   # предпочтения пользователя
 
     # Связь с таблицами
     groups: Mapped[list["Companions"]] = relationship(back_populates="user")

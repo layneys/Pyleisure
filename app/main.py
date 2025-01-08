@@ -4,7 +4,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from model.model import LLM_Get_Ans
 from model.parser import format_data_for_llm
-from app.dao import EventsDAO, WeatherDAO
+from app.dao import EventsDAO, WeatherDAO, ChoicesDAO
+import logging
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters.command import Command
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -67,3 +70,13 @@ async def process_data(
                                                            "events": events_data,
                                                            "weather": weather_data,
                                                           "model_response": model_response})
+
+@app.get("/liked", response_class=HTMLResponse)
+async def get_liked(request: Request):
+
+    liked_events = ChoicesDAO.liked_events(types.Message.from_user.id)
+
+    return templates.TemplateResponse("liked_events.html", {
+        "request": request,
+        "events": liked_events
+    })

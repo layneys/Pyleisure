@@ -153,3 +153,10 @@ class CompanionsDAO(BaseDAO):
 class ChoicesDAO(BaseDAO):
     model = Choices
 
+    @classmethod
+    async def liked_events(cls, telegram_id: int):
+        async with async_session() as session:
+            query = select(Choices).join(Events).where(Choices.telegram_id == telegram_id)
+            result = await session.execute(query)
+            liked_events = result.scalars().all()
+            return liked_events

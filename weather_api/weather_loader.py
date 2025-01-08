@@ -1,13 +1,18 @@
 import os
+
+from alembic.command import current
 from dotenv import load_dotenv
 import requests
 import json
+from datetime import datetime
+from app.models import Weather
+from app.dao import WeatherDAO
 
 load_dotenv()
 
-WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+api_key = '8995ff09c4c44060935115926250701'
 
-CITIES_NAMES = {
+cities_names = {
     "msk": "Moscow",
     "spb": "Saint Petersburg",
     "ekb": "Ekaterinburg",
@@ -15,23 +20,27 @@ CITIES_NAMES = {
 
 def get_weather(city: str):
     response_list = []
-    url = f'http://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={CITIES_NAMES[city]}&aqi=no"'
+    url = f'http://api.weatherapi.com/v1/current.json?key={api_key}&q={cities_names[city]}&aqi=no"'
     response = requests.get(url)
     response_json = response.json()
     return response_json
 
 
-def fill_fake_weather_db():
-
-    db_path = os.path.abspath("./fake_weather_db.json")
-    response_list = []
-    for city in CITIES_NAMES.keys():
-        response_list.append(get_weather(city))
-    with open(f'{db_path}', 'a', encoding='utf-8') as f:
-        json.dump(response_list, f, ensure_ascii=False, indent=4)
+async def fill_weather_db():
+    for city in ["msk", "spb", "ekb"]:
+        data = get_weather(city)
+        await WeatherDAO.add(city=data['location']['name'],
+            date=datetime.strptime(data['location']['localtime'][:10], "%Y-%m-%d").date(),
+            temperature=data['current']['temp_c'],
+            description=data['current']['condition']['text'],)
 
 
 if __name__ == "__main__":
-    pass
+    import asyncio
 
 
+    async def run():
+        await fill_weather_db()
+
+
+    asyncio.run(run())
