@@ -5,7 +5,7 @@ import os
 from typing_extensions import TypedDict, List, Dict
 load_dotenv()
   # Загружаем API-ключ из переменной окружения
-genai.configure(api_key='AIzaSyC88T1Gurdzk-WpUvd89jYcleM5JI88OY4')
+genai.configure(api_key='your_key')
 
 print(dir(genai))
 
