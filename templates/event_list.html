@@ -27,10 +27,8 @@
             <img src="{{event.images.image}}">
             <h3 class="card__title">{{ event.title.capitalize() }}</h3>
             <p class="card__subtitle">{{event.parsed_body_text | truncate (1000, True)}}</p>
-<!--            <p>Start date: {{event.dates.start}}</p>-->
-<!--            <p>End date: {{event.dates.end}}</p>-->
             {%if event.place.title %}
-                <p>Название места проведения: {{event.place.title}}</p>
+                <p>Место проведения: {{event.place.title}}</p>
             {% endif %}
             {% if event.place.address %}
                 <p>Адрес: {{event.place.address}}</p>
@@ -41,7 +39,7 @@
                 <p>{{event.price}}</p>
             {% endif %}
             {% if event.site_url %}
-                <p>Ссылка: {{ event.site_url }}</p>
+                <p>Сайт мероприятия: {{ event.site_url }}</p>
             {% endif %}
         </div>
 
