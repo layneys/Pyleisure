@@ -2,11 +2,12 @@ async function submitForm(event) {
             event.preventDefault(); // Предотвращаем перезагрузку страницы
 
             const formData = new FormData(event.target);
+            const textInputValue = document.getElementById("text-input").value;
+            formData.append("prompt", textInputValue);
             const response = await fetch("/list", {
                 method: "POST",
                 body: formData
             });
-
             // Получаем HTML-ответ
             const html = await response.text();
 

@@ -1,7 +1,13 @@
 import httpx
 import time
 from datetime import datetime, timedelta
-from external.parser import parse_input
+from lxml.html import fromstring
+
+
+def parse_input(entry):
+    tree = fromstring(entry)
+    return tree.text_content()
+
 
 def get_start_of_today_unix():
     now = datetime.now()

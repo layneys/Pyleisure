@@ -3,7 +3,12 @@ from datetime import datetime, timedelta
 import json
 import  requests
 import os
-from external.parser import parse_input
+from lxml.html import fromstring
+
+
+def parse_input(entry):
+    tree = fromstring(entry)
+    return tree.text_content()
 
 
 def get_start_of_today_unix():
