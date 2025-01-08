@@ -6,7 +6,7 @@
 
 <h2 class="cards__title">Погода</h2>
 
-<p>Температура: {{weather.current.temp_c}}°C </p>Ы
+<p>Температура: {{weather.current.temp_c}}°C </p>
 
 <!-- <h2>Общее количество мероприятий: {{ events.results|length }}</h2> -->
 
@@ -17,12 +17,32 @@
         <h1>А вот тут резы для запроса к модели:</h1>
 
     {% for found in model_response %}
-        <p> {{found.event_name}}</p>
-        <p>{{found.content}}</p>
-        <p>{{found.img_id}}</p>
+        <div class="card">
+            <div class="card__image-container">
+                <img src="{{found.img}}" alt="Картинка мероприятия">
+                <button class="card__like" onclick="clickLike(event, '{{ found.id }}')">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M21.5 3C25.0898 3 28 5.86042 28 9.38889C28 12.1534 26.6475 14.3582 25.8233 15.5248C22.2366 20.6011 17.7377 24.0626 15 26C12.2623 24.0626 7.76341 20.6011 4.17672 15.5248C3.35255 14.3582 2 12.1534 2 9.38889C2 5.86042 4.91015 3 8.5 3C10.45 3 13.05 3 15 6.83333C16.95 3 19.55 3 21.5 3Z" fill="#D9D9D9"/>
+                    </svg>
+                </button>
+            </div>
+            <h3 class="card__title">{{ found.title.capitalize() }}</h3>
+            <p class="card__subtitle">{{found.parsed_body_text | truncate (1000, True)}}</p>
+            {% if found.address %}
+                <p>Адрес: {{found.address}}</p>
+            {% endif %}
+            {%if found.is_free%}
+                <p>Бесплатно</p>
+                {% else %}
+                <p>{{found.price}}</p>
+            {% endif %}
+            {% if found.site_url %}
+                <p>Сайт мероприятия: {{ found.site_url }}</p>
+            {% endif %}
+        </div>    
     {% endfor %}
 
-    {% for event in events.results %}
+    <!-- {% for event in events.results %}
         <div class="card">
             <img src="{{event.images.image}}">
             <h3 class="card__title">{{ event.title.capitalize() }}</h3>
@@ -41,8 +61,7 @@
             {% if event.site_url %}
                 <p>Сайт мероприятия: {{ event.site_url }}</p>
             {% endif %}
-        </div>
+        </div> -->
 
-        <hr>
     {% endfor %}
 {% endblock %}
