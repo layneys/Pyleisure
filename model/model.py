@@ -5,8 +5,8 @@ import os
 import typing_extensions as typing
 
 load_dotenv()
-LLM_API_KEY = os.getenv('MODEL_API_KEY')
-genai.configure(api_key=LLM_API_KEY)
+#LLM_API_KEY = os.getenv('MODEL_API_KEY')
+genai.configure(api_key='AIzaSyC88T1Gurdzk-WpUvd89jYcleM5JI88OY4')
 
 # class LLM_Advise(typing.TypedDict):
 #     title: str

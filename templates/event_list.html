@@ -4,9 +4,10 @@
 
 {% block heading %}
 
-<h2 class="cards__title">Погода</h2>
+<h2 class="cards__title">Погода сегодня</h2>
 
-<p>Температура: {{weather.current.temp_c}}°C </p>Ы
+
+<p>Температура: {{weather.temperature}}°C, {{weather.description}} </p>
 
 <!-- <h2>Общее количество мероприятий: {{ events.results|length }}</h2> -->
 

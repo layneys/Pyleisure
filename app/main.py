@@ -3,7 +3,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from model.model import LLM_Get_Ans
-from model.parser import get_data_for_llm
+from model.parser import format_data_for_llm
+from app.dao import EventsDAO, WeatherDAO
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -23,7 +24,10 @@ async def process_data(
     # events = await get_events_page(choice) get from database
     # weather = await get_weather(choice) get from database
 
-    _, events, weather = get_data_for_llm()
+
+    events_data = await EventsDAO.get_event_data()
+    weather_data = await WeatherDAO.get_weather_data('Moscow')
+    user_data, events, weather = format_data_for_llm(events_data, weather_data)
 
     mocked_prefs = '''
         {
@@ -56,8 +60,10 @@ async def process_data(
 
     # model_response = await LLM_Get_Ans(prefs, events, weather, prompt)
     model_response = await LLM_Get_Ans(mocked_prefs, events, weather, prompt)
-
+    print(type(weather_data))
+    print(weather_data)
+    print(model_response)
     return templates.TemplateResponse("event_list.html", {"request": request,
-                                                          # "events": events,
-                                                          # "weather": weather,
+                                                           "events": events_data,
+                                                           "weather": weather_data,
                                                           "model_response": model_response})
