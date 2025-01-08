@@ -48,11 +48,10 @@ async function openLiked(event) {
         for (const found of data) {
             html += `
                 <div class="card">
-                    <img src="${found.images.image}" alt="Картинка мероприятия" onclick="clickLike(event, '${found.id}')">
+                    <img src="${found.img}" alt="Картинка мероприятия" onclick="clickLike(event, '${found.id}')">
                     <h3 class="card__title">${found.title.capitalize()}</h3>
                     <p class="card__subtitle">${found.parsed_body_text | truncate(1000, true)}</p>
-                    ${found.place.title ? `<p>Место проведения: ${found.place.title}</p>` : ''}
-                    ${found.place.address ? `<p>Адрес: ${found.place.address}</p>` : ''}
+                    ${found.place.address ? `<p>Адрес: ${found.address}</p>` : ''}
                     ${found.is_free ? '<p>Бесплатно</p>' : `<p>${found.price}</p>`}
                     ${found.site_url ? `<p>Сайт мероприятия: ${found.site_url}</p>` : ''}
                 </div>
