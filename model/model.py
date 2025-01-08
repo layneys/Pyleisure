@@ -8,23 +8,31 @@ load_dotenv()
 #LLM_API_KEY = os.getenv('MODEL_API_KEY')
 genai.configure(api_key='AIzaSyC88T1Gurdzk-WpUvd89jYcleM5JI88OY4')
 
-# class LLM_Advise(typing.TypedDict):
-#     title: str
-#     parsed_description: str
-#     parsed_body_text: str
-#     is_free: bool
-#     price: str
-#     img: str
-#     place: dict[str, str]
-#
 class LLM_Advise(typing.TypedDict):
-    event_name: str
-    content: str
-    img_id: int
+    event_id: int
+    title: str
+    parsed_description: str
+    parsed_body_text: str
+    price: str
+    img: str
+    place: dict[str, str]
+
 
 async def LLM_Get_Ans(prefs, weather, events, query):   
-    model = genai.GenerativeModel("gemini-1.5-flash",
-        system_instruction="Общайся на русском. Ты - помощник для поиска мероприятия для отдыха. Тебе будет дана информация о предпочтениях человека, погоде в его месте нахождения и проходящих там событиях, мероприятиях и интересных местах в формате json. Тебе нужно в соответствиями с предпочтениями человека и учитывая его пожелания сформировать список от пяти до пятнадцати подходящих мероприятий, куда ему можно сходить. Ответ возвращай в формате json с полями название и описание мероприятия. Описание мероприятия должно состоять из 5-8 предложений. Так же учитывай сообщение от пользователя. Так же запоминай id мероприятия и выводи его в финальный json, чтобы я мог восстановить картинку.")
+    model = genai.GenerativeModel(
+    "gemini-1.5-flash",
+    system_instruction=("""
+        Общайся на русском. Ты - помощник для поиска мероприятия для отдыха. 
+        Тебе будет дана информация о предпочтениях человека, погоде в его месте нахождения 
+        и проходящих там событиях, мероприятиях и интересных местах в формате JSON. 
+        Тебе нужно в соответствии с предпочтениями человека и учитывая его пожелания 
+        сформировать список от пяти до пятнадцати подходящих мероприятий, куда ему можно сходить. 
+        Ответ возвращай в формате JSON. 
+        Описание мероприятия должно состоять из 5-8 предложений. 
+        Также учитывай сообщение от пользователя.
+    """)
+)
+
     chat = model.start_chat()
     response = chat.send_message([
     "Создай список мероприятий на основе этих данных", f"Сообщение от пользователя: {query}", prefs, weather, events],
@@ -40,4 +48,3 @@ async def LLM_Get_Ans(prefs, weather, events, query):
         print("Error parsing response to JSON:", e)
         print("Raw response:", response.text)
         return None
-
