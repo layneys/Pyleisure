@@ -2,26 +2,22 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import json
 import os
-import typing_extensions as typing
+from typing import TypedDict, List, Dict
 
 load_dotenv()
-#LLM_API_KEY = os.getenv('MODEL_API_KEY')
 genai.configure(api_key='AIzaSyC88T1Gurdzk-WpUvd89jYcleM5JI88OY4')
 
-class LLM_Advise(typing.TypedDict):
+class LLM_Advise(TypedDict):
     event_id: int
     title: str
     parsed_description: str
     parsed_body_text: str
     price: str
     img: str
-    place: dict[str, str]
+    place: Dict[str, str]
 
-
-async def LLM_Get_Ans(prefs, weather, events, query):   
-    model = genai.GenerativeModel(
-    "gemini-1.5-flash",
-    system_instruction=("""
+async def LLM_Get_Ans(prefs: dict, weather: dict, events: List[dict], query: str):
+    system_instruction = """
         Общайся на русском. Ты - помощник для поиска мероприятия для отдыха. 
         Тебе будет дана информация о предпочтениях человека, погоде в его месте нахождения 
         и проходящих там событиях, мероприятиях и интересных местах в формате JSON. 
@@ -30,21 +26,26 @@ async def LLM_Get_Ans(prefs, weather, events, query):
         Ответ возвращай в формате JSON. 
         Описание мероприятия должно состоять из 5-8 предложений. 
         Также учитывай сообщение от пользователя.
-    """)
-)
-
-    chat = model.start_chat()
-    response = chat.send_message([
-    "Создай список мероприятий на основе этих данных", f"Сообщение от пользователя: {query}", prefs, weather, events],
-    generation_config=genai.GenerationConfig(
-        response_mime_type="application/json", response_schema=list[LLM_Advise]
-    ),
-)
+    """
+    input_message = f"""
+    Сообщение от пользователя: {query}
+    Предпочтения: {json.dumps(prefs, ensure_ascii=False)}
+    Погода: {json.dumps(weather, ensure_ascii=False)}
+    События: {json.dumps(events, ensure_ascii=False)}
+    """
     try:
-        response_json = json.loads(response.text)
-        print(response_json)  # Print the parsed JSON
+        response = genai.generate_text(
+            model="gemini-1.5-flash",
+            messages=[{"role": "system", "content": system_instruction}, {"role": "user", "content": input_message}],
+            temperature=0.7
+        )
+        response_json = json.loads(response.result)
+        print(response_json)
         return response_json
     except json.JSONDecodeError as e:
         print("Error parsing response to JSON:", e)
-        print("Raw response:", response.text)
+        print("Raw response:", response.result)
+        return None
+    except Exception as e:
+        print("An unexpected error occurred:", e)
         return None
