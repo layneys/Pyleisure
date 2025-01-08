@@ -1,68 +1,24 @@
 import asyncio
-from datetime import datetime
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import async_session
-from models import Users, Events, Weather
-from aiogram.types import Message
+from logging.config import fileConfig
+from sqlalchemy import pool, select
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
+from alembic import context
+from app.dao import UsersDAO, EventsDAO, WeatherDAO
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+import asyncio
+from datetime import date
 
-async def get_user_data(session: AsyncSession, telegram_id: int):
-    async with session.begin():
-        result = await session.execute(select(Users).where(Users.telegram_id == telegram_id))
-        user = result.scalar_one_or_none()
-        if not user:
-            return None
-        return {
-            "telegram id": user.telegram_id,
-            "real name": user.real_name,
-            "username": user.username,
-            "city": user.city,
-            "age": user.age,
-            "gender": user.gender,
-            "preferences": user.preferences
-        }
 
-async def get_event_data(session: AsyncSession):
-    async with session.begin():
-        result = await session.execute(select(Events))
-        events = result.scalars().all()
-        return [
-            {
-                "event_id": event.event_id,
-                "event_start_date": event.event_start_date,
-                "event_end_date": event.event_end_date,
-                "event_type": event.event_type,
-                "event_description": event.event_description,
-                "event_price": event.event_price,
-                "event_img": event.event_img,
-                "event_url": event.event_url,
-                "event_favorites_count": event.event_favorites_count
-            }
-            for event in events
-        ]
-
-async def get_weather_data(session: AsyncSession, city: str, date: str):
-    async with session.begin():
-        result = await session.execute(select(Weather).where(Weather.city == city, Weather.date == date))
-        weather = result.scalar_one_or_none()
-        if not weather:
-            return None
-        return {
-            "city": weather.city,
-            "date": weather.date,
-            "temperature": weather.temperature,
-            "description": weather.description,
-        }
-
-def format_data_for_llm(user_data, events_data, weather_data):
-    formatted_user_data = f"""User Information:
-    Telegram ID: {user_data.get('telegram id', 'Unknown')}
-    Real Name: {user_data.get('real name', 'Unknown')}
-    Username: {user_data.get('username', 'Unknown')}
-    City: {user_data.get('city', 'Unknown')}
-    Age: {user_data.get('age', 'Unknown')}
-    Gender: {user_data.get('gender', 'Unknown')}
-    Preferences: {user_data.get('preferences', 'None')}"""
+def format_data_for_llm(events_data, weather_data):
+    formatted_user_data = f"""User Information:"""
+    # Telegram ID: {user_data.get('telegram id', 'Unknown')}
+    # Real Name: {user_data.get('real name', 'Unknown')}
+    # Username: {user_data.get('username', 'Unknown')}
+    # City: {user_data.get('city', 'Unknown')}
+    # Age: {user_data.get('age', 'Unknown')}
+    # Gender: {user_data.get('gender', 'Unknown')}
+    # Preferences: {user_data.get('preferences', 'None')}"""
     formatted_events_data = "Events:\n"
     if events_data:
         for event in events_data:
@@ -91,26 +47,13 @@ def format_data_for_llm(user_data, events_data, weather_data):
         formatted_weather_data += "No weather data available.\n"
     return formatted_user_data, formatted_events_data, formatted_weather_data
 
-async def process_user_data(message: Message):
-    async with async_session() as session:
-        user_data = await get_user_data(session, message.from_user.id)
-        if not user_data:
-            return "Пользователь не найден."
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        events_data = await get_event_data(session)
-        weather_data = await get_weather_data(session, user_data["city"], current_date)
-        formatted_user_data, formatted_events_data, formatted_weather_data = format_data_for_llm(
-            user_data, events_data, weather_data
-        )
-        return formatted_user_data, formatted_events_data, formatted_weather_data
 
-async def main(message: Message):
-    formatted_data = await process_user_data(message)
-    if isinstance(formatted_data, str):
-        print(formatted_data)
-    else:
-        formatted_user_data, formatted_events_data, formatted_weather_data = formatted_data
-        print(formatted_user_data)
+if __name__ == '__main__':
+    async def get_data_for_llm():
+        #user_data = await asyncio.run(UsersDAO.get_user_data(user_id))
+        events_data = await EventsDAO.get_event_data()
+        weather_data = await WeatherDAO.get_weather_data('Moscow')
+        formatted_user_data, formatted_events_data, formatted_weather_data = format_data_for_llm(events_data, weather_data)
         print(formatted_events_data)
-        print(formatted_weather_data)
-        
+        return formatted_user_data, formatted_events_data, formatted_weather_data
+    asyncio.run(get_data_for_llm())
