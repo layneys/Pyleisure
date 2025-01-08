@@ -14,6 +14,8 @@ bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
+user_telegram_id = 0
+
 class UserForm(StatesGroup):
     telegram_id = State()
     real_name = State()
@@ -83,6 +85,8 @@ async def process_preferences(message: Message, state: FSMContext):
         f"gender: {user_data['gender']}\n"
         f"preferences: {user_data['preferences']}"
     )
+
+    user_telegram_id = user_data['telegram_id']
 
     await UsersDAO.add(telegram_id=user_data['telegram_id'],
         real_name=user_data['real_name'],

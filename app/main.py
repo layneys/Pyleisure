@@ -4,10 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from model.model import LLM_Get_Ans
 from model.parser import format_data_for_llm
-from app.dao import EventsDAO, WeatherDAO, ChoicesDAO
-import logging
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters.command import Command
+from app.dao import UsersDAO, EventsDAO, WeatherDAO, ChoicesDAO
+from app.bot import user_telegram_id
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -26,12 +24,13 @@ async def process_data(
     ):
     # events = await get_events_page(choice) get from database
     # weather = await get_weather(choice) get from database
-
-
+    #print(user_telegram_id)
+    #user_data = await UsersDAO.get_user_data(user_telegram_id)
     events_data = await EventsDAO.get_event_data()
     weather_data = await WeatherDAO.get_weather_data('Moscow')
-    user_data, events, weather = format_data_for_llm(events_data, weather_data)
-
+    user, events, weather = format_data_for_llm(events_data, weather_data)
+    #print(user_data)
+    #print(user)
     mocked_prefs = '''
         {
             "preferred_activity": "active",
@@ -41,25 +40,6 @@ async def process_data(
             "additional_notes": "Prefer outdoor activities"
         }
         '''
-
-    # mocked_events = '''
-    # {
-    #     "event_name": "Summer Jazz Festival",
-    #     "location": "Central Park",
-    #     "date": "2025-07-20",
-    #     "time": "18:00",
-    #     "price_usd": 50
-    # }
-    # '''
-    # mocked_weather = '''
-    # {
-    #     "city": "New York",
-    #     "temperature_celsius": 25,
-    #     "weather_condition": "sunny",
-    #     "humidity_percent": 60,
-    #     "wind_speed_kmh": 15
-    # }
-    # '''
 
     # model_response = await LLM_Get_Ans(prefs, events, weather, prompt)
     model_response = await LLM_Get_Ans(mocked_prefs, events, weather, prompt)
@@ -73,8 +53,12 @@ async def process_data(
 
 @app.get("/liked", response_class=HTMLResponse)
 async def get_liked(request: Request):
-
-    liked_events = ChoicesDAO.liked_events(types.Message.from_user.id)
+    try:
+        # Добавление записи в базу данных
+        await EventsDAO.add(telegram_id=telegram_id, event_id=event_id)
+        return {"message": "Event liked successfully"}
+    except Exception as e:
+        print(e)
 
     return templates.TemplateResponse("liked_events.html", {
         "request": request,

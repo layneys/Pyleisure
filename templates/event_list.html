@@ -17,7 +17,7 @@
 
         <h1>А вот тут резы для запроса к модели:</h1>
 
-    {% for found in model_response %}
+    {% for found in model_response.events %}
         <div class="card">
             <div class="card__image-container">
                 <img src="{{found.img}}" alt="Картинка мероприятия">
@@ -27,10 +27,10 @@
                     </svg>
                 </button>
             </div>
-            <h3 class="card__title">{{ found.event_name.capitalize() }}</h3>
-            <p class="card__subtitle">{{found.content | truncate (1000, True)}}</p>
-            {% if found.address %}
-                <p>Адрес: {{found.address}}</p>
+            <h3 class="card__title">{{ found.title }}</h3>
+            <p class="card__subtitle">{{found.description | truncate (1000, True)}}</p>
+            {% if found.place %}
+                <p>Адрес: {{found.place.name}} {{found.place.address}}</p>
             {% endif %}
             {%if found.is_free%}
                 <p>Бесплатно</p>
@@ -38,9 +38,9 @@
                 <p>{{found.price}}</p>
             {% endif %}
             {% if found.site_url %}
-                <p>Сайт мероприятия: {{ found.site_url }}</p>
+                <p>Сайт мероприятия: {{ found.url }}</p>
             {% endif %}
-        </div>    
+        </div>
     {% endfor %}
 
     <!-- {% for event in events.results %}
@@ -62,7 +62,9 @@
             {% if event.site_url %}
                 <p>Сайт мероприятия: {{ event.site_url }}</p>
             {% endif %}
-        </div> -->
+        </div>
 
-    {% endfor %}
+    {% endfor %} -->
+
+
 {% endblock %}
