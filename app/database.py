@@ -16,12 +16,12 @@ class Base(AsyncAttrs, DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 
-async def get_session() -> AsyncSession:
-    async with async_session() as session:
-        try:
-            yield session
-        except Exception as e:
-            await session.rollback()
-            raise e
-        finally:
-            await session.close()
+# async def get_session() -> AsyncSession:
+#     async with async_session() as session:
+#         try:
+#             yield session
+#         except Exception as e:
+#             await session.rollback()
+#             raise e
+#         finally:
+#             await session.close()
