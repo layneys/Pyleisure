@@ -20,7 +20,7 @@ async function submitForm(event) {
     document.getElementById("result-container").innerHTML = "Загрузка...";
 
     try {
-        const response = await fetch("/list", {
+        const response = await fetch(url, {
             method: "POST",
             body: formData
         });
@@ -89,14 +89,19 @@ async function clickLike(event, eventId) {
     const likeButton = event.target;
     const isLiked = likeButton.classList.contains('clicked');
 
+    let url = `/liked/${eventId}`;
+    if (userId) {
+        url += `?user_id=${userId}`;
+    }
+
     try {
         let response;
         if (isLiked) {
-            response = await fetch(`/liked/${eventId}`, {
+            response = await fetch(url, {
                 method: "DELETE"
             });
         } else {
-            response = await fetch(`/liked/${eventId}`, {
+            response = await fetch(url, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
