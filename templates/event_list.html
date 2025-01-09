@@ -6,15 +6,13 @@
 
 <h2 class="cards__title">Погода</h2>
 
-<p>Температура: {{weather.current.temp_c}}°C </p>
+<p>Город: {{city}}</p>
 
-<!-- <h2>Общее количество мероприятий: {{ events.results|length }}</h2> -->
+<p>Температура: {{weather.current.temp_c}}°C</p>
 
 {% endblock %}
 
 {% block content %}
-
-        <h1>А вот тут резы для запроса к модели:</h1>
 
     {% for found in model_response %}
         <div class="card">
@@ -41,27 +39,6 @@
             {% endif %}
         </div>    
     {% endfor %}
-
-    <!-- {% for event in events.results %}
-        <div class="card">
-            <img src="{{event.images.image}}">
-            <h3 class="card__title">{{ event.title.capitalize() }}</h3>
-            <p class="card__subtitle">{{event.parsed_body_text | truncate (1000, True)}}</p>
-            {%if event.place.title %}
-                <p>Место проведения: {{event.place.title}}</p>
-            {% endif %}
-            {% if event.place.address %}
-                <p>Адрес: {{event.place.address}}</p>
-            {% endif %}
-            {%if event.is_free%}
-                <p>Бесплатно</p>
-                {% else %}
-                <p>{{event.price}}</p>
-            {% endif %}
-            {% if event.site_url %}
-                <p>Сайт мероприятия: {{ event.site_url }}</p>
-            {% endif %}
-        </div> -->
 
     {% endfor %}
 {% endblock %}
