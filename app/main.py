@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, Form
+from idlelib.query import Query
+
+from fastapi import FastAPI, Request, Form, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -14,26 +16,23 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request, user_id: int = 0):
+    print(user_id)
     return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.post("/list", response_class=HTMLResponse)
 async def process_data(
     request: Request,
+    user_id: int = Query(default=0),
     choice: str = Form(...), prompt: str = Form(...)
     ):
-    # events = await get_events_page(choice) get from database
-    # weather = await get_weather(choice) get from database
-    #print(user_telegram_id)
+
     user_data = await UsersDAO.get_user_data(user_id)
-    print(user_id)
-    print(user_data)
     events_data = await EventsDAO.get_event_data()
     weather_data = await WeatherDAO.get_weather_data('Moscow')
     user, events, weather = format_data_for_llm(user_data, events_data, weather_data)
     city = 'Moscow'
-    #print(user_data)
-    print(user)
+
     # mocked_prefs = '''
     #     {
     #         "preferred_activity": "active",
@@ -62,8 +61,7 @@ def get_current_user_id():
 
 @app.post("/liked/{event_id}")
 @app.delete("/liked/{event_id}")
-async def like_event(request: Request, event_id: int):
-    user_id = get_current_user_id()
+async def like_event(request: Request, event_id: int, user_id: int = Query(default=0)):
     method = request.method
     try:
         if method == "POST":
@@ -85,10 +83,8 @@ async def like_event(request: Request, event_id: int):
 
 
 @app.get("/liked", response_class=JSONResponse)
-async def get_liked():
+async def get_liked(user_id: int = Query(default=0)):
     try:
-        user_id = get_current_user_id()
-
         # Получение лайкнутых мероприятий из базы данных
         liked_events = await ChoicesDAO.liked_events(user_id)
         print(liked_events)

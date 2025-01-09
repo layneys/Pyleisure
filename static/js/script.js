@@ -1,3 +1,8 @@
+let userId = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('user_id')) {
+        userId = urlParams.get('user_id');
+    }
 
 async function submitForm(event) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
@@ -6,11 +11,16 @@ async function submitForm(event) {
     const textInputValue = document.getElementById("text-input").value;
     formData.append("prompt", textInputValue);
 
+    let url = "/list";
+        if (userId) {
+            url += `?user_id=${userId}`;
+        }
+
     // Отображаем индикатор загрузки
     document.getElementById("result-container").innerHTML = "Загрузка...";
 
     try {
-        const response = await fetch("/list", {
+        const response = await fetch(url, {
             method: "POST",
             body: formData
         });
@@ -32,8 +42,13 @@ async function openLiked(event) {
     // Отображаем индикатор загрузки
     document.getElementById("result-container").innerHTML = "Загрузка...";
 
+    let url = "/liked";
+        if (userId) {
+            url += `?user_id=${userId}`;
+        }
+
     try {
-        const response = await fetch("/liked", {
+        const response = await fetch(url, {
             method: "GET"
         });
 
@@ -43,6 +58,7 @@ async function openLiked(event) {
 
         // Получаем JSON-ответ
         const data = await response.json();
+
         // Генерируем HTML для карточек "Любимое"
         let html = '';
         for (const found of data) {
@@ -67,21 +83,25 @@ async function openLiked(event) {
     }
 }
 
-
 async function clickLike(event, eventId) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
     const likeButton = event.target;
     const isLiked = likeButton.classList.contains('clicked');
 
+    let url = `/liked/${eventId}`;
+    if (userId) {
+        url += `?user_id=${userId}`;
+    }
+
     try {
         let response;
         if (isLiked) {
-            response = await fetch(`/liked/${eventId}`, {
+            response = await fetch(url, {
                 method: "DELETE"
             });
         } else {
-            response = await fetch(`/liked/${eventId}`, {
+            response = await fetch(url, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -101,3 +121,5 @@ async function clickLike(event, eventId) {
         console.error("Ошибка при лайке/дизлайке:", error);
     }
 }
+
+
