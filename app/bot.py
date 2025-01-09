@@ -8,13 +8,37 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQu
 
 from app.dao import UsersDAO
 
-API_TOKEN = 'your_key'
+# import os
+# from dotenv import load_dotenv
 
-bot = Bot(token=API_TOKEN)
+from fastapi import FastAPI, Request
+from contextlib import asynccontextmanager
+import logging
+
+# load_dotenv()
+
+# TELEGRAM_API_TOKEN = os.getenv('TELEGRAM_API_TOKEN')
+# BASE_SITE = os.getenv('BASE_SITE') # Ngrok?
+
+TELEGRAM_API_TOKEN = "your_key"
+BASE_SITE = "https://825a-198-244-215-120.ngrok-free.app" # Ngrok?
+
+bot = Bot(token=TELEGRAM_API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-user_telegram_id = 0
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    webhook_url = f"{BASE_SITE}/webhook"
+    await bot.set_webhook(
+        url=webhook_url,
+        allowed_updates=dp.resolve_used_update_types(),
+        drop_pending_updates=True
+    )
+    logging.info(f"Webhook set to {webhook_url}")
+    yield
+    await bot.delete_webhook()
+    logging.info("Webhook removed")
 
 class UserForm(StatesGroup):
     telegram_id = State()
@@ -86,8 +110,6 @@ async def process_preferences(message: Message, state: FSMContext):
         f"preferences: {user_data['preferences']}"
     )
 
-    user_telegram_id = user_data['telegram_id']
-
     await UsersDAO.add(telegram_id=user_data['telegram_id'],
         real_name=user_data['real_name'],
         username=user_data['username'],
@@ -103,4 +125,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

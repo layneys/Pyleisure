@@ -21,7 +21,7 @@
         <div class="card">
             <div class="card__image-container">
                 <img src="{{found.img}}" alt="Картинка мероприятия">
-                <button class="card__like" onclick="clickLike(event, '{{ found.id }}')">
+                <button class="card__like" onclick="clickLike(event, '{{ found.event_id }}')">
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M21.5 3C25.0898 3 28 5.86042 28 9.38889C28 12.1534 26.6475 14.3582 25.8233 15.5248C22.2366 20.6011 17.7377 24.0626 15 26C12.2623 24.0626 7.76341 20.6011 4.17672 15.5248C3.35255 14.3582 2 12.1534 2 9.38889C2 5.86042 4.91015 3 8.5 3C10.45 3 13.05 3 15 6.83333C16.95 3 19.55 3 21.5 3Z" fill="#D9D9D9"/>
                     </svg>
@@ -37,7 +37,7 @@
                 {% else %}
                 <p>{{found.price}}</p>
             {% endif %}
-            {% if found.site_url %}
+            {% if found.url %}
                 <p>Сайт мероприятия: {{ found.url }}</p>
             {% endif %}
         </div>

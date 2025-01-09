@@ -40,7 +40,7 @@ class Events(Base):
     event_url: Mapped[str] = mapped_column(String, nullable=False)
     event_favorites_count: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    choices: Mapped[list["Choices"]] = relationship(back_populates="events")  # надо сделать 1 к 1
+    choices: Mapped[list["Choices"]] = relationship(back_populates="events", cascade="all, delete-orphan")  # надо сделать 1 к 1
 
 
 class Weather(Base):
@@ -65,9 +65,9 @@ class Companions(Base):
 class Choices(Base):
     __tablename__ = 'choices'
 
-    choice_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    telegram_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.telegram_id'))
-    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.event_id'))
+    #choice_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    telegram_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.telegram_id'), primary_key=True)
+    event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.event_id'), primary_key=True)
     group_id: Mapped[int] = mapped_column(Integer, ForeignKey('companions.group_id'), nullable=True)
 
     user: Mapped["Users"] = relationship(back_populates="choices")
