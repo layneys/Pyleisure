@@ -76,9 +76,10 @@ async def fill_event_db():
                 break
 
 if __name__ == "__main__":
-    import asyncio
-
-    async def run():
-        await fill_event_db()
-
-    asyncio.run(run())
+    pass
+    # import asyncio
+    #
+    # async def run():
+    #     await fill_event_db()
+    #
+    # asyncio.run(run())

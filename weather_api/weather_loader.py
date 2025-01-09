@@ -10,7 +10,7 @@ from app.dao import WeatherDAO
 
 load_dotenv()
 
-api_key = 'your_key'
+api_key = 'dbdc9eeafd074a498ae112415250401'
 
 cities_names = {
     "msk": "Moscow",
@@ -36,11 +36,12 @@ async def fill_weather_db():
 
 
 if __name__ == "__main__":
-    import asyncio
-
-
-    async def run():
-        await fill_weather_db()
-
-
-    asyncio.run(run())
+    pass
+    # import asyncio
+    #
+    #
+    # async def run():
+    #     await fill_weather_db()
+    #
+    #
+    # asyncio.run(run())

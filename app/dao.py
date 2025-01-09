@@ -104,6 +104,15 @@ class WeatherDAO(BaseDAO):
                 "description": weather.description,
             }
 
+    @classmethod
+    async def delete_irrelevant_weather(cls):
+        async with async_session() as session:
+            stmt = sqlalchemy_delete(Weather)
+            result = await session.execute(stmt)
+
+            # Подтверждение изменений
+            await session.commit()
+
 
 class EventsDAO(BaseDAO):
     model = Events
@@ -133,10 +142,10 @@ class EventsDAO(BaseDAO):
         async with async_session() as session:
             try:
                 # Получение текущей даты
-                current_date = datetime.now().date()
+                current_date = datetime.now()
 
                 # Удаление событий с датой окончания меньше текущей даты
-                stmt = sqlalchemy_delete(Events).where(Events.event_end_date[:11] < str(current_date))
+                stmt = sqlalchemy_delete(Events).where(Events.event_end_date < current_date.strftime("%Y-%m-%d %H:%M:%S"))
                 result = await session.execute(stmt)
 
                 # Подтверждение изменений
