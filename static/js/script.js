@@ -67,31 +67,36 @@ async function openLiked(event) {
     }
 }
 
-
 async function clickLike(event, eventId) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
-    const data = {
-        id: eventId,
-    };
+    const likeButton = event.target;
+    const isLiked = likeButton.classList.contains('clicked');
 
     try {
-        const response = await fetch(`/liked/${eventId}`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Ошибка при лайке: ${response.statusText}`);
+        let response;
+        if (isLiked) {
+            response = await fetch(`/liked/${eventId}`, {
+                method: "DELETE"
+            });
+        } else {
+            response = await fetch(`/liked/${eventId}`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: eventId })
+            });
         }
 
-        console.log("Лайк успешно отправлен");
-        // Добавляем класс 'clicked' к кнопке
-        event.target.classList.add('clicked');
+        if (!response.ok) {
+            throw new Error(`Ошибка при лайке/дизлайке: ${response.statusText}`);
+        }
+
+        console.log(isLiked ? "Лайк удален" : "Лайк добавлен");
+        // Переключаем класс 'clicked' на кнопке
+        likeButton.classList.toggle('clicked');
     } catch (error) {
-        console.error("Ошибка при лайке:", error);
+        console.error("Ошибка при лайке/дизлайке:", error);
     }
 }
