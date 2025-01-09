@@ -8,37 +8,11 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQu
 
 from app.dao import UsersDAO
 
-# import os
-# from dotenv import load_dotenv
+API_TOKEN = "7823460747:AAHo3mK2PtLWmAfLJS-6HZ3Yk9tvjiukpp8"
 
-from fastapi import FastAPI, Request
-from contextlib import asynccontextmanager
-import logging
-
-# load_dotenv()
-
-# TELEGRAM_API_TOKEN = os.getenv('TELEGRAM_API_TOKEN')
-# BASE_SITE = os.getenv('BASE_SITE') # Ngrok?
-
-TELEGRAM_API_TOKEN = "your_key"
-BASE_SITE = "https://825a-198-244-215-120.ngrok-free.app" # Ngrok?
-
-bot = Bot(token=TELEGRAM_API_TOKEN)
+bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    webhook_url = f"{BASE_SITE}/webhook"
-    await bot.set_webhook(
-        url=webhook_url,
-        allowed_updates=dp.resolve_used_update_types(),
-        drop_pending_updates=True
-    )
-    logging.info(f"Webhook set to {webhook_url}")
-    yield
-    await bot.delete_webhook()
-    logging.info("Webhook removed")
 
 class UserForm(StatesGroup):
     telegram_id = State()
@@ -100,6 +74,16 @@ async def process_preferences(message: Message, state: FSMContext):
 
     user_data = await state.get_data()
 
+    await UsersDAO.add(
+        telegram_id=user_data['telegram_id'],
+        real_name=user_data['real_name'],
+        username=user_data['username'],
+        city=user_data['city'],
+        age=user_data['age'],
+        gender=user_data['gender'],
+        preferences=user_data['preferences'],
+    )
+
     await message.answer(
         f"telegram_id: {user_data['telegram_id']}\n"
         f"real_name: {user_data['real_name']}\n"
@@ -110,17 +94,16 @@ async def process_preferences(message: Message, state: FSMContext):
         f"preferences: {user_data['preferences']}"
     )
 
-    await UsersDAO.add(telegram_id=user_data['telegram_id'],
-        real_name=user_data['real_name'],
-        username=user_data['username'],
-        city=user_data['city'],
-        age=user_data['age'],
-        gender=user_data['gender'],
-        preferences=user_data['preferences'],)
+    link = f"http://127.0.0.1:8000/?user_id={user_data['telegram_id']}"
+    await message.answer(
+        "Спасибо! Нажмите на ссылку, чтобы перейти на сайт:\n"
+        f"{link}"
+    )
 
     await state.clear()
 
 async def main():
+    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 if __name__ == "__main__":

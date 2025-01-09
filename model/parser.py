@@ -6,15 +6,15 @@ from app.database import async_session
 from app.dao import UsersDAO, EventsDAO, WeatherDAO
 from aiogram.types import Message
 
-def format_data_for_llm(events_data, weather_data):
-    formatted_user_data = f"""User Information:"""
-    # Telegram ID: {user_data.get('telegram id', 'Unknown')}
-    # Real Name: {user_data.get('real name', 'Unknown')}
-    # Username: {user_data.get('username', 'Unknown')}
-    # City: {user_data.get('city', 'Unknown')}
-    # Age: {user_data.get('age', 'Unknown')}
-    # Gender: {user_data.get('gender', 'Unknown')}
-    # Preferences: {user_data.get('preferences', 'None')}"""
+def format_data_for_llm(user_data, events_data, weather_data):
+    formatted_user_data = f"""User Information:
+    Telegram ID: {user_data['telegram id']}
+    Real Name: {user_data['real name']}
+    Username: {user_data['username']}
+    City: {user_data['city']}
+    Age: {user_data['age']}
+    Gender: {user_data['gender']}
+    Preferences: {user_data.get('preferences', 'None')}"""
     formatted_events_data = "Events:\n"
     if events_data:
         for event in events_data:
