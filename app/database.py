@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine, AsyncSession
 
-database_url = 'postgresql+asyncpg://postgres:175176vanya@localhost:5432/pydb'
+database_url = 'postgresql+asyncpg://postgres:admin@localhost:5432/pydb'
 engine = create_async_engine(url=database_url,
                              pool_size=5,
                              max_overflow=10,
