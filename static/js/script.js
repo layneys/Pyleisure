@@ -71,9 +71,17 @@ async function openLiked(event) {
 async function clickLike(event, eventId) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
+    const data = {
+        id: eventId,
+    };
+
     try {
         const response = await fetch(`/liked/${eventId}`, {
-            method: "POST"
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
         if (!response.ok) {
