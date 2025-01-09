@@ -1,3 +1,6 @@
+from random import choices
+
+from httpx import delete
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete, String
@@ -165,7 +168,37 @@ class ChoicesDAO(BaseDAO):
     @classmethod
     async def liked_events(cls, telegram_id: int):
         async with async_session() as session:
-            query = select(Choices).join(Events).where(Choices.telegram_id == telegram_id)
+            # Выбираем данные из таблицы Events, связанных через Choices
+            query = (
+                select(Events)
+                .join(Choices, Choices.event_id == Events.event_id)
+                .where(Choices.telegram_id == telegram_id)
+            )
             result = await session.execute(query)
             liked_events = result.scalars().all()
-            return liked_events
+
+            # Преобразуем события в список словарей
+            return [
+                {
+                    "event_id": event.event_id,
+                    "event_title": event.event_title,
+                    "event_city": event.event_city,
+                    "event_place": event.event_place,
+                    "event_start_date": event.event_start_date,
+                    "event_end_date": event.event_end_date,
+                    "event_type": event.event_type,
+                    "event_description": event.event_description,
+                    "event_price": event.event_price,
+                    "event_img": event.event_img,
+                    "event_url": event.event_url,
+                    "event_favorites_count": event.event_favorites_count,
+                }
+                for event in liked_events
+            ]
+
+    @classmethod
+    async def delete_event(cls, telegram_id: int, event_id: int):
+        async with async_session() as session:
+            query = sqlalchemy_delete(Choices).where(Choices.telegram_id == telegram_id).where(Choices.event_id == event_id)
+            result = await session.execute(query)
+            await session.commit()

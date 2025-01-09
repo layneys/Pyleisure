@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from model.model import LLM_Get_Ans
@@ -77,16 +77,44 @@ async def like_event(event_id: int):
         logging.error(f"Ошибка при добавлении лайка: {e}")
         return {"error": "Произошла ошибка"}
 
-@app.get("/liked", response_class=HTMLResponse)
-async def get_liked(request: Request):
+@app.post("/delete/{event_id}")
+async def delete_event(event_id: int):
+    user_id = get_current_user_id()
+    print(event_id)
+    try:
+        # Удаление записи о лайке из базы данных
+        await ChoicesDAO.delete_event(telegram_id=user_id, event_id=event_id)
+        return {"message": f"Event {event_id} deleted successfully"}
+    except Exception as e:
+        logging.error(f"Ошибка при удалении лайка: {e}")
+        return {"error": "Произошла ошибка"}
+
+@app.get("/liked", response_class=JSONResponse)
+async def get_liked():
     try:
         user_id = get_current_user_id()
 
-        liked_events = ChoicesDAO.liked_events(user_id)
-        return templates.TemplateResponse("liked_events.html", {
-            "request": request,
-            "events": liked_events
-        })
+        # Получение лайкнутых мероприятий из базы данных
+        liked_events = await ChoicesDAO.liked_events(user_id)
+        print(liked_events)
+
+        # Преобразуем события в JSON
+        # response_data = [
+        #     {
+        #         "id": event.id,
+        #         "title": event.title,
+        #         "description": event.description,
+        #         "img": event.image_url,
+        #         "address": event.address,
+        #         "price": event.price,
+        #         "is_free": event.is_free,
+        #         "site_url": event.site_url,
+        #     }
+        #     for event in liked_events
+        # ]
+
+        return JSONResponse(content=liked_events)
 
     except Exception as e:
-        print(e)
+        logging.error(f"Ошибка при получении лайкнутых мероприятий: {e}")
+        return JSONResponse(content={"error": "Произошла ошибка"}, status_code=500)

@@ -40,7 +40,7 @@ class Events(Base):
     event_url: Mapped[str] = mapped_column(String, nullable=False)
     event_favorites_count: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    choices: Mapped[list["Choices"]] = relationship(back_populates="events", cascade="all, delete-orphan")  # надо сделать 1 к 1
+    choices: Mapped[list["Choices"]] = relationship(back_populates="events", cascade="all, delete-orphan")
 
 
 class Weather(Base):

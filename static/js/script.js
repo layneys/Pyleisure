@@ -1,3 +1,4 @@
+
 async function submitForm(event) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
@@ -42,19 +43,17 @@ async function openLiked(event) {
 
         // Получаем JSON-ответ
         const data = await response.json();
-
         // Генерируем HTML для карточек "Любимое"
         let html = '';
-        for (const found of data.results) {
+        for (const found of data) {
             html += `
                 <div class="card">
-                    <img src="${found.images.image}" alt="Картинка мероприятия" onclick="clickLike(event, '${found.id}')">
-                    <h3 class="card__title">${found.title.capitalize()}</h3>
-                    <p class="card__subtitle">${found.parsed_body_text | truncate(1000, true)}</p>
-                    ${found.place.title ? `<p>Место проведения: ${found.place.title}</p>` : ''}
-                    ${found.place.address ? `<p>Адрес: ${found.place.address}</p>` : ''}
-                    ${found.is_free ? '<p>Бесплатно</p>' : `<p>${found.price}</p>`}
-                    ${found.site_url ? `<p>Сайт мероприятия: ${found.site_url}</p>` : ''}
+                    <img src="${found.event_img}" alt="Картинка мероприятия" onclick="clickLike(event, '${found.event_id}')">
+                    <h3 class="card__title">${found.event_title}</h3>
+                    <p class="card__subtitle">${found.event_description}</p>
+                    ${found.event_place ? `<p>Адрес: ${found.event_place}</p>` : ''}
+                    <p>${found.event_price}</p>
+                    ${found.event_url ? `<p>Сайт мероприятия: ${found.event_url}</p>` : ''}
                 </div>
                 <hr>
             `;
@@ -72,9 +71,17 @@ async function openLiked(event) {
 async function clickLike(event, eventId) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
+    const data = {
+        id: eventId,
+    };
+
     try {
         const response = await fetch(`/liked/${eventId}`, {
-            method: "POST"
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
         if (!response.ok) {
