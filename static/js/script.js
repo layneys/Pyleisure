@@ -1,9 +1,20 @@
+let userId = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('user_id')) {
+        userId = urlParams.get('user_id');
+    }
+
 async function submitForm(event) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
     const formData = new FormData(event.target);
     const textInputValue = document.getElementById("text-input").value;
     formData.append("prompt", textInputValue);
+
+    let url = "/list";
+        if (userId) {
+            url += `?user_id=${userId}`;
+        }
 
     // Отображаем индикатор загрузки
     document.getElementById("result-container").innerHTML = "Загрузка...";
@@ -31,8 +42,13 @@ async function openLiked(event) {
     // Отображаем индикатор загрузки
     document.getElementById("result-container").innerHTML = "Загрузка...";
 
+    let url = "/liked";
+        if (userId) {
+            url += `?user_id=${userId}`;
+        }
+
     try {
-        const response = await fetch("/liked", {
+        const response = await fetch(url, {
             method: "GET"
         });
 
