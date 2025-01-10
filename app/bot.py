@@ -107,7 +107,7 @@ async def process_preferences(message: Message, state: FSMContext):
 @dp.message(Command("my_events"))
 async def cmd_my_events(message: Message):
     user_id = message.from_user.id
-    user = await UsersDAO.get_by_telegram_id(user_id)
+    user = await UsersDAO.get_user_data(user_id)
     if user:
         await message.answer("Вы есть в бд, сейчас пришлю ваши мероприятия")
 
