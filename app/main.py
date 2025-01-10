@@ -1,5 +1,3 @@
-from idlelib.query import Query
-
 from fastapi import FastAPI, Request, Form, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -16,8 +14,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request, user_id: int = 0):
-    print(user_id)
-    return templates.TemplateResponse("index.html", {"request": request})
+    username = UsersDAO.get_username_by_user_id(user_id)
+    return templates.TemplateResponse("index.html", {"request": request, "username": username})
 
 
 @app.post("/list", response_class=HTMLResponse)
@@ -27,37 +25,23 @@ async def process_data(
     choice: str = Form(...), prompt: str = Form(...)
     ):
 
+    cities = {'Москва': 'Moscow', 'Санкт-Петербург': 'Saint Petersburg', 'Екатеринбург': 'Ekaterinburg'}
+
     user_data = await UsersDAO.get_user_data(user_id)
-    events_data = await EventsDAO.get_event_data()
-    weather_data = await WeatherDAO.get_weather_data('Moscow')
+    city = cities[user_data['city']]
+    print(type(city))
+    print(city)
+    events_data = await EventsDAO.get_event_data(city)
+    weather_data = await WeatherDAO.get_weather_data(city)
     user, events, weather = format_data_for_llm(user_data, events_data, weather_data)
-    city = 'Moscow'
-
-    # mocked_prefs = '''
-    #     {
-    #         "preferred_activity": "active",
-    #         "budget": "medium",
-    #         "duration_hours": 3,
-    #         "group_type": "friends",
-    #         "additional_notes": "Prefer outdoor activities"
-    #     }
-    #     '''
-
     # model_response = await LLM_Get_Ans(prefs, events, weather, prompt)
     model_response = await LLM_Get_Ans(user, events, weather, prompt)
-    print(type(weather_data))
-    print(weather_data)
-    print(model_response)
     return templates.TemplateResponse("event_list.html", {"request": request,
                                                            "events": events_data,
                                                            "city": city,
                                                            "weather": weather_data,
                                                           "model_response": model_response})
 
-
-# Имитация текущего пользователя
-def get_current_user_id():
-    return 1  # Пример: текущий пользователь с id = 1
 
 @app.post("/liked/{event_id}")
 @app.delete("/liked/{event_id}")

@@ -15,8 +15,6 @@
 
 {% block content %}
 
-        <h1>А вот тут резы для запроса к модели:</h1>
-
     {% for found in model_response.events %}
         <div class="card">
             <div class="card__image-container">
@@ -38,8 +36,9 @@
                 <p>{{found.price}}</p>
             {% endif %}
             {% if found.url %}
-                <p>Сайт мероприятия: {{ found.url }}</p>
+                <p>Сайт мероприятия: <a href="{{ found.url }}" target="_blank">{{ found.url }}</a></p>
             {% endif %}
+
         </div>
     {% endfor %}
 

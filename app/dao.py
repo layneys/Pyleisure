@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete, String
 from app.database import async_session
-from app.models import Users, Events, Companions, Choices, Weather
+from app.models import Users, Events, Choices, Weather
 from datetime import datetime
 from sqlalchemy.sql.expression import cast
 
@@ -60,10 +60,10 @@ class UsersDAO(BaseDAO):
             return result.scalar_one_or_none()
 
     @classmethod
-    async def get_user_id_by_username(cls, username: str):
+    async def get_username_by_user_id(cls, user_id: int):
         async with async_session() as session:
             result = await session.execute(
-                select(Users.telegram_id).where(Users.username == username)
+                select(Users.real_name).where(Users.telegram_id == user_id)
             )
             user_id = result.scalar_one_or_none()
             return user_id or "Такого пользователя не существует"
@@ -121,9 +121,9 @@ class EventsDAO(BaseDAO):
     model = Events
 
     @classmethod
-    async def get_event_data(cls):
+    async def get_event_data(cls, city):
         async with async_session() as session:
-            result = await session.execute(select(Events))
+            result = await session.execute(select(Events).where(Events.event_city == city))
             events = result.scalars().all()
             return [
                 {
@@ -158,9 +158,6 @@ class EventsDAO(BaseDAO):
             except Exception as e:
                 await session.rollback()  # Откат изменений в случае ошибки
                 print(f"Ошибка при удалении старых мероприятий: {e}")
-
-class CompanionsDAO(BaseDAO):
-    model = Companions
 
 class ChoicesDAO(BaseDAO):
     model = Choices

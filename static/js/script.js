@@ -69,7 +69,7 @@ async function openLiked(event) {
                     <p class="card__subtitle">${found.event_description}</p>
                     ${found.event_place ? `<p>Адрес: ${found.event_place}</p>` : ''}
                     <p>${found.event_price}</p>
-                    ${found.event_url ? `<p>Сайт мероприятия: ${found.event_url}</p>` : ''}
+                    ${found.event_url ? `<p>Сайт мероприятия: <a href="${found.event_url}" target="_blank">${found.event_url}</a></p>` : ''}
                 </div>
                 <hr>
             `;

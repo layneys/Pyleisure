@@ -21,7 +21,6 @@ class Users(Base):
     preferences: Mapped[str] = mapped_column(String, nullable=True)   # предпочтения пользователя
 
     # Связь с таблицами
-    groups: Mapped[list["Companions"]] = relationship(back_populates="user")
     choices: Mapped[list["Choices"]] = relationship(back_populates="user")
 
 class Events(Base):
@@ -51,26 +50,13 @@ class Weather(Base):
     temperature: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
 
-class Companions(Base):
-    __tablename__ = 'companions'
-
-    group_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    created_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.telegram_id'))
-    members_ids: Mapped[JSONB] = mapped_column(JSONB, nullable=False)
-
-    user: Mapped["Users"] = relationship(back_populates="groups")
-    choices: Mapped[list["Choices"]] = relationship(back_populates="groups")
-
-
 class Choices(Base):
     __tablename__ = 'choices'
 
     #choice_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     telegram_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.telegram_id'), primary_key=True)
     event_id: Mapped[int] = mapped_column(Integer, ForeignKey('events.event_id'), primary_key=True)
-    group_id: Mapped[int] = mapped_column(Integer, ForeignKey('companions.group_id'), nullable=True)
 
     user: Mapped["Users"] = relationship(back_populates="choices")
     events: Mapped["Events"] = relationship(back_populates="choices")
-    groups: Mapped["Companions"] = relationship(back_populates="choices")
 
