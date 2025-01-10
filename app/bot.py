@@ -7,6 +7,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
 
 from app.dao import UsersDAO
+from app.dao import ChoicesDAO
 
 API_TOKEN = "7823460747:AAHo3mK2PtLWmAfLJS-6HZ3Yk9tvjiukpp8"
 
@@ -101,6 +102,37 @@ async def process_preferences(message: Message, state: FSMContext):
     )
 
     await state.clear()
+
+
+@dp.message(Command("my_events"))
+async def cmd_my_events(message: Message):
+    user_id = message.from_user.id
+    user = await UsersDAO.get_by_telegram_id(user_id)
+    if user:
+        await message.answer("Вы есть в бд, сейчас пришлю ваши мероприятия")
+
+        liked_events = await ChoicesDAO.liked_events(user_id)
+
+        if liked_events:
+            text = "Ваши лайкнутые мероприятия:\n\n"
+            for event in liked_events:
+                text += (
+                    f"=== {event['event_title']} ===\n"
+                    f"ID: {event['event_id']}\n"
+                    f"Город: {event['event_city']}\n"
+                    f"Место: {event['event_place']}\n"
+                    f"Дата начала: {event['event_start_date']}\n"
+                    f"Дата окончания: {event['event_end_date']}\n"
+                    f"Тип: {event['event_type']}\n"
+                    f"Описание: {event['event_description']}\n"
+                    f"Цена: {event['event_price']}\n"
+                    f"Ссылка: {event['event_url']}\n\n"
+                )
+            await message.answer(text)
+        else:
+            await message.answer("У Вас пока нет лайкнутых мероприятий.")
+    else:
+        await message.answer("Вас нет в бд, сначала зарегистрируйтесь!")
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)

@@ -87,6 +87,13 @@ class UsersDAO(BaseDAO):
                 "preferences": user.preferences
             }
 
+    @classmethod
+    async def get_by_telegram_id(cls, telegram_id: int):
+        async with async_session() as session:
+            result = await session.execute(
+                select(Users).where(Users.telegram_id == telegram_id)
+            )
+            return result.scalar_one_or_none()
 
 class WeatherDAO(BaseDAO):
     model = Weather
