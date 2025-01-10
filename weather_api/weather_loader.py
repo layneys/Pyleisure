@@ -10,7 +10,7 @@ from app.dao import WeatherDAO
 
 load_dotenv()
 
-api_key = 'dbdc9eeafd074a498ae112415250401'
+api_key = 'your_key'
 
 cities_names = {
     "msk": "Moscow",

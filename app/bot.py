@@ -9,7 +9,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQu
 from app.dao import UsersDAO
 from app.dao import ChoicesDAO
 
-API_TOKEN = "7823460747:AAHo3mK2PtLWmAfLJS-6HZ3Yk9tvjiukpp8"
+API_TOKEN = "your_key"
 
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
